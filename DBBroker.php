@@ -133,6 +133,13 @@ class DBBroker
         return $pStatement->execute();
     }
 
+    public function povecajBrojKnjigaNaLageru($id, $kolicina)
+    {
+        $pStatement = $this->konekcija->prepare("update knjiga set naStanju = naStanju + ". $kolicina . " WHERE knjigaID = ?");
+        $pStatement->bind_param("i",$id);
+        return $pStatement->execute();
+    }
+
     public function vratiKupovinePoKupcu($kupacID)
     {
         $pStatement = $this->konekcija->prepare("SELECT * FROM kupovina k  where k.kupacID = ?");
@@ -185,5 +192,27 @@ class DBBroker
         $pStatement = $this->konekcija->prepare("INSERT INTO zanr VALUES (null,?)");
         $pStatement->bind_param("s",$nazivZanra);
         return $pStatement->execute();
+    }
+
+    public function promeniStatusKupovine($kupovinaID, $status)
+    {
+        $pStatement = $this->konekcija->prepare("update kupovina set statusKupovine = ?  WHERE id = ?");
+        $pStatement->bind_param("si",$status,$kupovinaID);
+        return $pStatement->execute();
+    }
+
+    public function vratiPodatkeZaGrafik()
+    {
+        $pStatement = $this->konekcija->prepare("select nazivKnjige, sum(brojKnjiga) as brojKupovina from knjiga k join stavkakupovine s on k.knjigaID = s.knjigaID group by k.knjigaID");
+        $pStatement->execute();
+        $result = $pStatement->get_result();
+        $niz = [];
+
+        while($rez = $result->fetch_object()){
+            $niz[] = $rez;
+        }
+
+        return $niz;
+
     }
 }

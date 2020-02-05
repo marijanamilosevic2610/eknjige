@@ -90,6 +90,10 @@ $zanrovi = $db->vratiZanrove();
 
             </div>
         </div>
+        <h2>Galerija slika sa javnog servisa</h2>
+        <div class="container" id="galerija">
+
+        </div>
 
     </div>
 </div>
@@ -150,6 +154,13 @@ $zanrovi = $db->vratiZanrove();
     }
     pretrazi();
 </script>
-
+<script>
+    $.ajax({
+        url: 'javniServis.php',
+        success: function (slike) {
+            $("#galerija").html(slike);
+        }
+    })
+</script>
 </body>
 </html>

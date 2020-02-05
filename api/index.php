@@ -15,11 +15,11 @@ Flight::route('GET /zanrovi', function(){
     echo json_encode($rezultati);
 });
 
-Flight::route('GET /kupovine', function(){
+Flight::route('GET /podaciGrafik', function(){
     header("Content-Type: application/json; charset=utf-8");
     /** @var DBBroker $db */
     $db = Flight::db();
-    $rezultati = $db->vratiKupovine();
+    $rezultati = $db->vratiPodatkeZaGrafik();
     echo json_encode($rezultati);
 });
 

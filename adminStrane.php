@@ -164,7 +164,11 @@ curl_close($curl);
                 </tbody>
             </table>
         </div>
-
+        <div class="row">
+            <div class="col-md-6">
+                <div id="piechart" style="width: 600px; height: 500px;"></div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -229,6 +233,37 @@ curl_close($curl);
         })
     }
 
+</script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(grafik1);
+
+    function grafik1() {
+
+        $.ajax({
+            url: 'api/podaciGrafik',
+            success: function (podaci) {
+
+                let nizZaChart = [['Knjiga','Broj kupovina']];
+
+                $.each(podaci, function (i,podatak) {
+                    nizZaChart.push([podatak.nazivKnjige,parseInt(podatak.brojKupovina)]);
+                })
+                var data = google.visualization.arrayToDataTable(nizZaChart);
+
+                var options = {
+                    title: 'Broj kupovina po knjizi', pieHole: 0.2
+                };
+
+                var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+                chart.draw(data, options);
+            }
+        })
+
+
+    }
 </script>
 
 </body>
