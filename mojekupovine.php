@@ -19,6 +19,8 @@ $zanrovi = $db->vratiZanrove();
     <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
     <link href="css/style_1.css" rel="stylesheet" type="text/css"/>
     <script src="js/modernizr-3.5.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/zf-6.4.3/dt-1.10.20/datatables.min.css"/>
+
 </head>
 <body>
 <div class="container-fluid fh5co_header_bg">
@@ -62,33 +64,51 @@ $zanrovi = $db->vratiZanrove();
             <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">Nasa mala knjizara</div>
         </div>
         <div class="row">
-            <div class="col-md-6">
-                <label for="zanrovi">Pretrazi po zanru</label>
-                <select class="form-control" id="zanrovi">
+            <div class="col-md-12">
+                <table class="table" id="kupovine">
+                    <thead>
+                    <tr>
+                        <th class="text-center">ID</th>
+                        <th class="text-center">Ukupna cena</th>
+                        <th class="text-center">Datum</th>
+                        <th class="text-center">Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
                     <?php
-                    foreach ($zanrovi as $zanr){
+
+                    $mojeKupovine = $db->vratiKupovinePoKupcu($_SESSION['kupac']->kupacID);
+
+                    foreach ($mojeKupovine as $kupovina) {
+
                         ?>
-                    <option value="<?= $zanr->zanrID ?>"><?= $zanr->nazivZanra ?></option>
-                    <?php
+                        <tr>
+                            <td><?php echo $kupovina->id ?></td>
+                            <td><?php echo $kupovina->ukupanIznos ?> dinara</td>
+                            <td><?php echo $kupovina->datumKupovine ?></td>
+                            <td>
+                                <?php
+                                $klasa = "-";
+                                if($kupovina->statusKupovine == 'Obrada'){
+                                    $klasa = "text-warning";
+                                }
+                                if($kupovina->statusKupovine == 'Zavrsena'){
+                                    $klasa = "text-success";
+                                }
+                                if($kupovina->statusKupovine == 'Odbijena'){
+                                    $klasa = "text-danger";
+                                }
+                                ?>
+
+                            <span class="<?php echo $klasa ?>"><?php echo $kupovina->statusKupovine ?></span></td>
+                        </tr>
+                        <?php
                     }
                     ?>
-
-                </select>
-            </div>
-            <div class="col-md-6">
-                <label for="sort">Sortiraj po ceni</label>
-                <select class="form-control" id="sort">
-                    <option value="asc">Rastuce</option>
-                    <option value="desc">Opadajuce</option>
-                </select>
+                    </tbody>
+                </table>
             </div>
 
-            <div class="col-md-12" style="padding-top: 15px;">
-                <button class="btn btn-primary" onclick="pretrazi()" id="pretraga">Pretrazi</button>
-            </div>
-            <div class="col-md-12" style="padding-top: 15px;" id="rezultat">
-
-            </div>
         </div>
 
     </div>
@@ -117,6 +137,8 @@ $zanrovi = $db->vratiZanrove();
         crossorigin="anonymous"></script>
 <script src="js/jquery.waypoints.min.js"></script>
 <script src="js/main.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/zf-6.4.3/dt-1.10.20/datatables.min.js"></script>
+
 <script>
     (function () {
         function checkTime(i) {
@@ -136,19 +158,9 @@ $zanrovi = $db->vratiZanrove();
         startTime();
     })();
 </script>
-<script>
-    function pretrazi(){
-        let sort = $("#sort").val();
-        let zanr = $("#zanrovi").val();
 
-        $.ajax({
-            url: 'knjigeZaProdavnicu.php?sort='+sort+"&zanr="+zanr,
-            success: function (knjige) {
-                $("#rezultat").html(knjige);
-            }
-        })
-    }
-    pretrazi();
+<script>
+    $("#kupovine").dataTable();
 </script>
 
 </body>

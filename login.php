@@ -1,7 +1,5 @@
 <?php
 include "init.php";
-
-$zanrovi = $db->vratiZanrove();
 ?>
 
 
@@ -62,33 +60,28 @@ $zanrovi = $db->vratiZanrove();
             <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">Nasa mala knjizara</div>
         </div>
         <div class="row">
-            <div class="col-md-6">
-                <label for="zanrovi">Pretrazi po zanru</label>
-                <select class="form-control" id="zanrovi">
-                    <?php
-                    foreach ($zanrovi as $zanr){
-                        ?>
-                    <option value="<?= $zanr->zanrID ?>"><?= $zanr->nazivZanra ?></option>
-                    <?php
-                    }
-                    ?>
-
-                </select>
+            <form method="post" action="uloguj.php">
+            <div class="col-md-12">
+                <label for="username">Username</label>
+                <input type="text" name="username" class="form-control">
             </div>
-            <div class="col-md-6">
-                <label for="sort">Sortiraj po ceni</label>
-                <select class="form-control" id="sort">
-                    <option value="asc">Rastuce</option>
-                    <option value="desc">Opadajuce</option>
+            <div class="col-md-12">
+                <label for="password">Password</label>
+                <input type="password" name="password" class="form-control">
+            </div>
+            <div class="col-md-12">
+                <label for="tip">Ja sam</label>
+                <select class="form-control" name="tip">
+                    <option value="admin">Administrator</option>
+                    <option value="kupac">Kupac</option>
                 </select>
             </div>
 
             <div class="col-md-12" style="padding-top: 15px;">
-                <button class="btn btn-primary" onclick="pretrazi()" id="pretraga">Pretrazi</button>
+                <input type="submit" class="btn btn-primary"value="Uloguj" >
             </div>
-            <div class="col-md-12" style="padding-top: 15px;" id="rezultat">
-
-            </div>
+            </form>
+            <h3><?php if(isset($_GET['poruka'])){ echo $_GET['poruka'];} ?></h3>
         </div>
 
     </div>

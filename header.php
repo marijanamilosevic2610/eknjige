@@ -8,14 +8,48 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php">Home <span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="index.php">Prodanica <span class="sr-only">(current)</span></a>
                     </li>
-                    <li class="nav-item ">
-                        <a class="nav-link" href="blog.html">Blog <span class="sr-only">(current)</span></a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="korpa.php">Korpa <span class="sr-only">(current)</span></a>
                     </li>
-                    <li class="nav-item ">
-                        <a class="nav-link" href="single.html">Single <span class="sr-only">(current)</span></a>
-                    </li>
+                    <?php
+                    if($_SESSION['ulogovan']){
+                        if($_SESSION['kupac']){
+                            ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="zavrsiKupovinu.php">Checkout <span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="mojekupovine.php">Moje kupovine <span class="sr-only">(current)</span></a>
+                            </li>
+                            <?php
+                        }
+                        if($_SESSION['administrator']){
+                            ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="adminStrane.php">Admin strane <span class="sr-only">(current)</span></a>
+                            </li>
+                            <?php
+                        }
+                        ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="logout.php">Logout <span class="sr-only">(current)</span></a>
+                        </li>
+                    <?php
+                    }else{
+                        ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.php">Login <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="registracija.php">Nemate nalog <span class="sr-only">(current)</span></a>
+                        </li>
+                    <?php
+
+                    }
+                    ?>
+
                 </ul>
             </div>
         </nav>

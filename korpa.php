@@ -1,7 +1,5 @@
 <?php
 include "init.php";
-
-$zanrovi = $db->vratiZanrove();
 ?>
 
 
@@ -62,32 +60,60 @@ $zanrovi = $db->vratiZanrove();
             <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">Nasa mala knjizara</div>
         </div>
         <div class="row">
-            <div class="col-md-6">
-                <label for="zanrovi">Pretrazi po zanru</label>
-                <select class="form-control" id="zanrovi">
-                    <?php
-                    foreach ($zanrovi as $zanr){
-                        ?>
-                    <option value="<?= $zanr->zanrID ?>"><?= $zanr->nazivZanra ?></option>
-                    <?php
-                    }
-                    ?>
-
-                </select>
-            </div>
-            <div class="col-md-6">
-                <label for="sort">Sortiraj po ceni</label>
-                <select class="form-control" id="sort">
-                    <option value="asc">Rastuce</option>
-                    <option value="desc">Opadajuce</option>
-                </select>
-            </div>
 
             <div class="col-md-12" style="padding-top: 15px;">
-                <button class="btn btn-primary" onclick="pretrazi()" id="pretraga">Pretrazi</button>
-            </div>
-            <div class="col-md-12" style="padding-top: 15px;" id="rezultat">
+                <h2>Zavrsetak kupovine je moguc samo ukoliko ste ulogovani</h2>
+                <?php
 
+                if (empty($_SESSION['korpa'])){
+                    echo "<h4>Nemate knjiga u korpi.</h4>";
+                }else{
+                    ?>
+                    <form method="post" action="promeniBrojKnjigaUKorpi.php">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th class="text-center">Knjiga</th>
+                                <th class="text-center">Kolicina</th>
+                                <th class="text-center">Na stanju</th>
+                                <th class="text-center">Cena</th>
+                                <th class="text-center">Ukupno</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+
+                            $knjigeIzKorpe = implode(",",array_keys($_SESSION['korpa']));
+                            $nizKnjigaIzKorpe = $db->vratiKnjigePoIdijevima($knjigeIzKorpe);
+
+                            $ukupno = 0;
+
+                            foreach ($nizKnjigaIzKorpe as $knjiga) {
+                                $ukupnoStavka = $_SESSION['korpa'][$knjiga->knjigaID]['kolicina'] * $knjiga->cena;
+                                $ukupno += $ukupnoStavka;
+
+                                ?>
+                                <tr>
+                                    <td><?php echo $knjiga->nazivKnjige ?></td>
+                                    <td><input class="form-control" type="text" name="kolicina[<?php echo $knjiga->knjigaID ?>]" size="5" value="<?php echo $_SESSION['korpa'][$knjiga->knjigaID]['kolicina'] ?>" style="border: 1px solid black;"/></td>
+                                    <td><?php echo $knjiga->naStanju ?> komada</td>
+                                    <td><?php echo $knjiga->cena ?> dinara</td>
+                                    <td><?php echo $ukupnoStavka ?> dinara</td>
+                                </tr>
+                                <?php
+                            }
+                            ?>
+                            <tr>
+                                <td colspan="4">Ukupna cena: <?php echo $ukupno ?> dinara</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <hr>
+                        <button class="btn btn-lg btn-primary" type="submit" name="submit">Promeni kolicine</button>
+
+                    </form>
+                    <p>Za brisanje knjige iz korpe stavite kolicinu na nulu. </p>
+                <?php } ?>
             </div>
         </div>
 
@@ -136,20 +162,7 @@ $zanrovi = $db->vratiZanrove();
         startTime();
     })();
 </script>
-<script>
-    function pretrazi(){
-        let sort = $("#sort").val();
-        let zanr = $("#zanrovi").val();
 
-        $.ajax({
-            url: 'knjigeZaProdavnicu.php?sort='+sort+"&zanr="+zanr,
-            success: function (knjige) {
-                $("#rezultat").html(knjige);
-            }
-        })
-    }
-    pretrazi();
-</script>
 
 </body>
 </html>

@@ -1,7 +1,11 @@
 <?php
 include "init.php";
 
-$zanrovi = $db->vratiZanrove();
+$curl = curl_init("http://localhost/eknjige/api/zanrovi");
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+$jsonOdgovor = curl_exec($curl);
+$zanrovi = json_decode($jsonOdgovor);
+curl_close($curl);
 ?>
 
 
@@ -62,8 +66,9 @@ $zanrovi = $db->vratiZanrove();
             <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">Nasa mala knjizara</div>
         </div>
         <div class="row">
-            <div class="col-md-6">
-                <label for="zanrovi">Pretrazi po zanru</label>
+            <h2>Unos knjige</h2>
+            <div class="col-md-12">
+                <label for="zanrovi">Zanr</label>
                 <select class="form-control" id="zanrovi">
                     <?php
                     foreach ($zanrovi as $zanr){
@@ -74,21 +79,90 @@ $zanrovi = $db->vratiZanrove();
                     ?>
 
                 </select>
-            </div>
-            <div class="col-md-6">
-                <label for="sort">Sortiraj po ceni</label>
-                <select class="form-control" id="sort">
-                    <option value="asc">Rastuce</option>
-                    <option value="desc">Opadajuce</option>
-                </select>
+                <label for="naziv">Naziv knjige</label>
+                <input type="text" id="naziv" class="form-control">
+                <label for="cena">Cena knjige</label>
+                <input type="text" id="cena" class="form-control">
+                <label for="autor">Autor knjige</label>
+                <input type="text" id="autor" class="form-control">
+                <label for="nastanju">Knjiga na stanju</label>
+                <input type="text" id="nastanju" class="form-control">
             </div>
 
             <div class="col-md-12" style="padding-top: 15px;">
-                <button class="btn btn-primary" onclick="pretrazi()" id="pretraga">Pretrazi</button>
+                <button class="btn btn-primary" onclick="unesiKnjigu()" id="pretraga">Unesi knjigu</button>
             </div>
             <div class="col-md-12" style="padding-top: 15px;" id="rezultat">
 
             </div>
+        </div>
+        <div class="row">
+            <table class="table" id="kupovine">
+                <thead>
+                <tr>
+                    <th class="text-center">ID</th>
+                    <th class="text-center">Ukupna cena</th>
+                    <th class="text-center">Datum</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Prihvati</th>
+                    <th class="text-center">Odbi</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+
+                $mojeKupovine = $db->vratiKupovine();
+
+                foreach ($mojeKupovine as $kupovina) {
+
+                    ?>
+                    <tr>
+                        <td><?php echo $kupovina->id ?></td>
+                        <td><?php echo $kupovina->ukupanIznos ?> dinara</td>
+                        <td><?php echo $kupovina->datumKupovine ?></td>
+                        <td>
+                            <?php
+                            $klasa = "-";
+                            if($kupovina->statusKupovine == 'Obrada'){
+                                $klasa = "text-warning";
+                            }
+                            if($kupovina->statusKupovine == 'Zavrsena'){
+                                $klasa = "text-success";
+                            }
+                            if($kupovina->statusKupovine == 'Odbijena'){
+                                $klasa = "text-danger";
+                            }
+                            ?>
+
+                            <span class="<?php echo $klasa ?>"><?php echo $kupovina->statusKupovine ?></span></td>
+                            <td>
+
+                                <?php
+
+                            if($kupovina->statusKupovine == 'Obrada'){
+                                ?>
+                                <a href="prihvatiKupovinu.php?id=<?php echo $kupovina->id ?>" class="btn btn-success">Prihvati</a>
+                                <?php
+                            }
+                            ?>
+                            </td>
+                        <td>
+
+                            <?php
+
+                            if($kupovina->statusKupovine == 'Obrada'){
+                                ?>
+                                <a href="odbiKupovinu.php?id=<?php echo $kupovina->id ?>" class="btn btn-danger">Odbi</a>
+                                <?php
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                    <?php
+                }
+                ?>
+                </tbody>
+            </table>
         </div>
 
     </div>
@@ -137,18 +211,24 @@ $zanrovi = $db->vratiZanrove();
     })();
 </script>
 <script>
-    function pretrazi(){
-        let sort = $("#sort").val();
-        let zanr = $("#zanrovi").val();
+    function unesiKnjigu(){
 
         $.ajax({
-            url: 'knjigeZaProdavnicu.php?sort='+sort+"&zanr="+zanr,
-            success: function (knjige) {
-                $("#rezultat").html(knjige);
+            url: 'unosKnjige.php',
+            type: 'POST',
+            data: {
+                naziv : $("#naziv").val(),
+                autor : $("#autor").val(),
+                zanr : $("#zanrovi").val(),
+                cena : $("#cena").val(),
+                nastanju : $("#nastanju").val()
+            },
+            success: function (poruka) {
+                $("#rezultat").html(poruka);
             }
         })
     }
-    pretrazi();
+
 </script>
 
 </body>
