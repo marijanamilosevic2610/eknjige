@@ -237,9 +237,9 @@ curl_close($curl);
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
     google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(grafik1);
+    google.charts.setOnLoadCallback(nacrtaj);
 
-    function grafik1() {
+    function nacrtaj() {
 
         $.ajax({
             url: 'api/podaciGrafik',

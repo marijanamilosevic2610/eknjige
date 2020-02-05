@@ -62,7 +62,7 @@ include "init.php";
         <div class="row">
 
             <div class="col-md-12" style="padding-top: 15px;">
-                <h2>Zavrsetak kupovine je moguc samo ukoliko ste ulogovani</h2>
+                <?php if($_SESSION['ulogovan'] == false){ ?><h2>Zavrsetak kupovine je moguc samo ukoliko ste ulogovani</h2> <?php } ?>
                 <?php
 
                 if (empty($_SESSION['korpa'])){
